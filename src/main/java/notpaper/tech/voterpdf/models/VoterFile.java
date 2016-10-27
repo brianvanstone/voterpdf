@@ -1,10 +1,8 @@
 package notpaper.tech.voterpdf.models;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -13,11 +11,11 @@ import org.apache.commons.io.IOUtils;
 public class VoterFile implements Iterable<Voter> {
 	private static final String NOT_YET_PROCESSED = "NOT_YET_PROCESSED";
 	
-	private File inputFile;
 	private String assemblyNumber;
+	private String scrubbedContents;
 	
-	public VoterFile(File inputFile) {
-		this.inputFile = inputFile;
+	public VoterFile(String scrubbedContents) {
+		this.scrubbedContents = scrubbedContents;
 		this.assemblyNumber = NOT_YET_PROCESSED;
 	}
 	
@@ -27,7 +25,7 @@ public class VoterFile implements Iterable<Voter> {
 
 	@Override
 	public Iterator<Voter> iterator() {
-		return new VoterFileIterator(inputFile);
+		return new VoterFileIterator(scrubbedContents);
 	}
 	
 	private class VoterFileIterator implements Iterator<Voter> {
@@ -36,12 +34,8 @@ public class VoterFile implements Iterable<Voter> {
 		private BufferedReader br;
 		private boolean done = false;
 		
-		public VoterFileIterator(File inputFile) {
-			try {
-				br = new BufferedReader(new FileReader(inputFile));
-			} catch (FileNotFoundException e) {
-				throw new RuntimeException("File not found when attempting to parse", e);
-			}
+		public VoterFileIterator(String inputFile) {
+			br = new BufferedReader(new StringReader(inputFile));
 			
 			//TODO parse through initial meta data to find first street
 			//make sure we grab the assemblyNumber
@@ -57,13 +51,15 @@ public class VoterFile implements Iterable<Voter> {
 						street = line.trim();
 						break;
 					default:
-						continue;
+						break;
 					}
 					
 					//got the first street, stop parsing for now, meta data finished
 					if (street != null) {
 						break;
 					}
+					
+					line = br.readLine();
 				}
 			} catch (IOException e) {
 				throw new RuntimeException("IOException encountered while attempting to read input file", e);
@@ -120,7 +116,7 @@ public class VoterFile implements Iterable<Voter> {
 			} catch (IOException e) {
 				IOUtils.closeQuietly(br);
 				
-				throw new RuntimeException("IOException encountered while attempting to read input file", e);
+				throw new RuntimeException("IOException encountered while attempting to read the pre-processed pdf file", e);
 			}
 			return v;
 		}

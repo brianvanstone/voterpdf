@@ -1,5 +1,7 @@
 package notpaper.tech.voterpdf.models;
 
+import java.util.regex.Pattern;
+
 public enum LineType {
 	
 	STREET, VOTER, ASSEMBLY, MISC;
@@ -23,19 +25,20 @@ public enum LineType {
 		return line.startsWith("Assembly");
 	}
 
+	private static final Pattern streetPattern = Pattern.compile("[A-Z ]+");
 	private static boolean isStreet(String line) {
 		if (line.endsWith("(Cont..)")) {
 			return true;
 		}
 		
-		if (65 <= line.charAt(0) && line.charAt(0) <= 90 && !line.contains("#")) {
+		 
+		if (streetPattern.matcher(line).matches()) {
 			return true;
 		}
 		
 		return false;
 	}
 	
-	//TODO implement logic
 	private static boolean isVoter(String line) {
 		return line.startsWith(TWO_SPACE) || line.startsWith(ASTERISK);
 	}

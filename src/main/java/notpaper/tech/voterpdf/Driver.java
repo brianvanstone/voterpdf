@@ -11,6 +11,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 import notpaper.tech.voterpdf.models.Voter;
 import notpaper.tech.voterpdf.models.VoterFile;
@@ -43,21 +45,17 @@ public class Driver
 			throw new FileNotFoundException("The file indicated by '" + inputFilePath + "' could not be found.");
 		}
 		
-		/*
-		//TODO remove this DEBUG code for pdfbox
+		//scrub the PDF into flat text
 		PDDocument doc = PDDocument.load(inputFile);
-	    String text = new PDFTextStripper().getText(doc);
-	    try (PrintStream out = new PrintStream(new FileOutputStream(outputFilePath))) {
-	        out.print(text);
-	    }
-	    */
+	    String scrubbedContents = new PDFTextStripper().getText(doc);
 		
 		//create the VoterFile object
-		VoterFile voterFile = new VoterFile(inputFile);
+		VoterFile voterFile = new VoterFile(scrubbedContents);
 		
 		//TODO parse the VoterFile into Voters
+		//and write the voters to file
 		for(Voter v : voterFile) {
-			break;
+			continue;
 		}
     }
     

@@ -11,10 +11,18 @@ import java.util.NoSuchElementException;
 import org.apache.commons.io.IOUtils;
 
 public class VoterFile implements Iterable<Voter> {
+	private static final String NOT_YET_PROCESSED = "NOT_YET_PROCESSED";
+	
 	private File inputFile;
+	private String assemblyNumber;
 	
 	public VoterFile(File inputFile) {
 		this.inputFile = inputFile;
+		this.assemblyNumber = NOT_YET_PROCESSED;
+	}
+	
+	public String getAssemblyNumber() {
+		return this.assemblyNumber;
 	}
 
 	@Override
@@ -24,7 +32,7 @@ public class VoterFile implements Iterable<Voter> {
 	
 	private class VoterFileIterator implements Iterator<Voter> {
 		
-		private String street;
+		private String street = null;
 		private BufferedReader br;
 		private boolean done = false;
 		
@@ -34,6 +42,33 @@ public class VoterFile implements Iterable<Voter> {
 			} catch (FileNotFoundException e) {
 				throw new RuntimeException("File not found when attempting to parse", e);
 			}
+			
+			//TODO parse through initial meta data to find first street
+			//make sure we grab the assemblyNumber
+			try {
+				String line = br.readLine();
+				while(line != null) {
+					
+					switch(LineType.getLineType(line)) {
+					case ASSEMBLY:
+						assemblyNumber = line.substring(line.lastIndexOf(' '), line.length()).trim();
+						break;
+					case STREET:
+						street = line.trim();
+						break;
+					default:
+						continue;
+					}
+					
+					//got the first street, stop parsing for now, meta data finished
+					if (street != null) {
+						break;
+					}
+				}
+			} catch (IOException e) {
+				throw new RuntimeException("IOException encountered while attempting to read input file", e);
+			}
+			
 		}
 
 		@Override
@@ -56,16 +91,24 @@ public class VoterFile implements Iterable<Voter> {
 				String line = br.readLine();
 				while(line != null) {
 					
-					//TODO handle each different type of line
 					switch(LineType.getLineType(line)) {
 					case STREET:
-						//TODO update the street value
+						//upate the street value
+						street = line;
 						break;
+						
 					case VOTER:
-						//create a new voter and return it, leave br open for future reading
+						//construct a voter
+						v = new Voter(line);
 						break;
-					case MISC:
+						
+					default:
 						//ignore for now unless Tom wants meta data
+						break;
+					}
+					
+					//if we found a voter, break out of loop
+					if (v != null) {
 						break;
 					}
 				}

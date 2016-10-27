@@ -1,8 +1,8 @@
 package notpaper.tech.voterpdf.models;
 
-public class Voter {
+public final class Voter {
 	
-	public Voter(String line) {
+	protected Voter(String line) {
 		
 	}
 

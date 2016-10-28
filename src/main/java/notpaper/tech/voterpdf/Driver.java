@@ -54,9 +54,12 @@ public class Driver
 		
 		//TODO parse the VoterFile into Voters
 		//and write the voters to file
+		int i = 0;
 		for(Voter v : voterFile) {
-			continue;
+			i++;
 		}
+		
+		System.out.println("# Voters Found: " + i);
     }
     
 	@SuppressWarnings("static-access")

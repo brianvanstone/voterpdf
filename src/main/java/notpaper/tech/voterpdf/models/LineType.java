@@ -31,6 +31,12 @@ public enum LineType {
 			return true;
 		}
 		
+		switch(line) {
+		case "SELECTION CRITERIA":
+		case "WE HEREBY CERTIFY THAT THE FOLLOWING LIST OF ELECTORS IS COMPLETE AND CORRECT AS OF THIS DATE":
+		case "REGISTRARS OF VOTERS":
+			return false;
+		}
 		 
 		if (streetPattern.matcher(line).matches()) {
 			return true;

@@ -107,6 +107,8 @@ public class VoterFile implements Iterable<Voter> {
 					if (v != null) {
 						break;
 					}
+					
+					line = br.readLine();
 				}
 				
 				if (line == null) {

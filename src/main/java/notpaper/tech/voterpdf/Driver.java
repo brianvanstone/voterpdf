@@ -1,7 +1,9 @@
 package notpaper.tech.voterpdf;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
@@ -27,6 +29,9 @@ public class Driver
 	
 	private static final String ARG_INPUT_FILE = "i";
     private static final String ARG_OUTPUT_FILE = "o";
+    
+    private static final String delimiter = ",";
+	private static final String CRLF = "\r\n";
 	
     public static void main( String[] argsIn ) throws IOException
     {
@@ -55,9 +60,23 @@ public class Driver
 		//TODO parse the VoterFile into Voters
 		//and write the voters to file
 		int i = 0;
+		
+		BufferedWriter bw =  new BufferedWriter(new FileWriter(outputFilePath));
+		bw.write(String.join(delimiter,Voter.getCSVHeaders()));
+		bw.write(CRLF);
 		for(Voter v : voterFile) {
+			if (v == null) {
+				break;
+			}
+			
 			i++;
+			
+			bw.write(v.asCSVRow(delimiter));
+			bw.write(CRLF);
+			
+			System.out.println(i);
 		}
+		bw.close();
 		
 		System.out.println("# Voters Found: " + i);
     }

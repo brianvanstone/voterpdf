@@ -95,7 +95,7 @@ public class VoterFile implements Iterable<Voter> {
 						
 					case VOTER:
 						//construct a voter
-						v = new Voter(line);
+						v = new Voter(street, line);
 						break;
 						
 					default:

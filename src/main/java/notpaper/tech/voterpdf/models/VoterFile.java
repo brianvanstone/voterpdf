@@ -99,7 +99,7 @@ public class VoterFile implements Iterable<Voter> {
 						break;
 						
 					default:
-						//ignore for now unless Tom wants meta data
+						//ignore for now unless we want meta data
 						break;
 					}
 					

@@ -1,4 +1,4 @@
-package notpaper.tech.voterpdf.models;
+package tech.notpaper.voterpdf.models;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,6 +33,7 @@ public class VoterFile implements Iterable<Voter> {
 		private String street = null;
 		private BufferedReader br;
 		private boolean done = false;
+		private int seqNo = 0;
 		
 		public VoterFileIterator(String inputFile) {
 			br = new BufferedReader(new StringReader(inputFile));
@@ -91,6 +92,11 @@ public class VoterFile implements Iterable<Voter> {
 					case STREET:
 						//upate the street value
 						street = line;
+						break;
+						
+					case VOTER_NOSEQ:
+						this.seqNo++;
+						v = new Voter(street, line, seqNo);
 						break;
 						
 					case VOTER:

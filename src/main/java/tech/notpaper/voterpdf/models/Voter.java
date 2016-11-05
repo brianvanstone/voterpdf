@@ -1,4 +1,4 @@
-package notpaper.tech.voterpdf.models;
+package tech.notpaper.voterpdf.models;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -11,7 +11,7 @@ public final class Voter {
 	private String street;
 	private String name;
 	private int seqNo;
-	private String party;
+	private String party = "";
 	private String streetNo;
 	private String unit = "";
 	
@@ -26,6 +26,7 @@ public final class Voter {
 		}
 		
 		line = line.trim();
+		System.out.println(line);
 		
 		Matcher m = namePattern.matcher(line);
 		int end;
@@ -33,24 +34,52 @@ public final class Voter {
 			this.name = m.group(1);
 			end = m.end();
 		} else {
-			throw new IllegalArgumentException("The input line is not in the correct format");
+			throw new IllegalArgumentException("The input line is not in the correct format: [" + origLine + "]");
 		}
 		
 		line = line.substring(end);
 		
 		String[] tokens = line.split(" ");
 		try {
+			
 			this.seqNo = Integer.parseInt(tokens[0]);
 			this.party = tokens[1];
 			if (tokens.length > 2) {
 				this.streetNo = tokens[2];
 			}
 			if (tokens.length > 3) {
-				this.unit =  tokens[3];
+				this.unit =  tokens[3].trim().equals("BASEMEN") ? "BASEMENT" : tokens[3];
 			}
 		} catch (IndexOutOfBoundsException e) {
 			throw new IllegalArgumentException("The input line is not in the correct format: [" + origLine + "]", e);
 		}
+	}
+
+	protected Voter(String street, String line, int seqNo) {
+		String origLine = line;
+		this.street = street;
+		
+		if (line.startsWith("*")) {
+			line = line.substring(1);
+		}
+		
+		line = line.trim();
+		System.out.println(line);
+		
+		Matcher m = namePattern.matcher(line);
+		int end;
+		if (m.find()) {
+			this.name = m.group(1);
+			end = m.end();
+		} else {
+			throw new IllegalArgumentException("The input line is not in the correct format: [" + origLine + "]");
+		}
+		
+		line = line.substring(end);
+		//line will look like "51"
+		this.streetNo = line.substring(0,line.length()-Integer.toString(seqNo).length());
+		this.seqNo = seqNo;
+		
 	}
 
 	public String getStreet() {

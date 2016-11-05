@@ -1,17 +1,21 @@
-package notpaper.tech.voterpdf.models;
+package tech.notpaper.voterpdf.models;
 
 import java.util.regex.Pattern;
 
 public enum LineType {
 	
-	STREET, VOTER, ASSEMBLY, MISC;
+	BLANK, STREET, VOTER_NOSEQ, VOTER, ASSEMBLY, MISC;
 	
 	private static final String TWO_SPACE = "  ";
 	private static final String ASTERISK = "*";
 	
 	public static LineType getLineType(String line) {
-		if (isVoter(line)) {
-			return VOTER;
+		if ((line == null) || isblank(line)) {
+			return BLANK;
+		} else if (isVoterNoSeq(line)) {
+			return VOTER_NOSEQ;
+		} else if (isVoter(line)) {
+			return VOTER_NOSEQ;
 		} else if (isStreet(line)) {
 			return STREET;
 		} else if (isAssemblyNum(line)) {
@@ -21,8 +25,17 @@ public enum LineType {
 		}
 	}
 	
+	private static boolean isblank(String line) {
+		return line.trim().isEmpty();
+	}
+
 	private static boolean isAssemblyNum(String line) {
 		return line.startsWith("Assembly");
+	}
+	
+	private static final Pattern voterNoSeqPattern = Pattern.compile("[\\*A-Za-z\\- ]+\\d+");
+	private static boolean isVoterNoSeq(String line) {
+		return voterNoSeqPattern.matcher(line).matches();
 	}
 
 	private static final Pattern streetPattern = Pattern.compile("[A-Z ]+");
@@ -46,6 +59,6 @@ public enum LineType {
 	}
 	
 	private static boolean isVoter(String line) {
-		return line.startsWith(TWO_SPACE) || line.startsWith(ASTERISK);
+		return !line.startsWith("* Indicates") && (line.startsWith(TWO_SPACE) || line.startsWith(ASTERISK));
 	}
 }
